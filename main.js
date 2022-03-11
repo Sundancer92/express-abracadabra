@@ -27,6 +27,24 @@ app.get("/usuarios", (req, res) => {
 	});
 });
 
+// A traves de un middleware se valida la existencia del nombre en el el archivo JSON
+app.use("/juego/:usuario", (req, res, next) => {
+	const nombres = JSON.parse(fs.readFileSync("assets/nombres.json", "utf8"));
+
+	for (const usuario of nombres.usuarios) {
+		if (usuario === req.params.usuario) {
+			res.send(`El usuario ${usuario} existe en el juego`);
+			return;
+		}
+	}
+	next();
+});
+
+app.get("/juego/:usuario", (req, res) => {
+	const usuario = req.params.usuario;
+	res.send(`El usuario ${usuario} no existe en el juego`);
+});
+
 // Inicializacion del servidor en el puerto 3000
 app.listen(3000, () => {
 	console.log("El servidor está inicializado en http://localhost:3000/");
